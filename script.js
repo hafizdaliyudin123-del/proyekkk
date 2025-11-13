@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const daftarKeranjangUI = document.getElementById('daftar-keranjang');
     const formCheckout = document.getElementById('pembayaran-form');
     const tombolBayar = document.getElementById('checkout-button');
-    const peringatanKeranjang = document.getElementById('peringatan-keranjang');
+    const peringatanKeranjang = document.getElementById('peringatan-keranjang'); // Nama variabel sudah benar
 
     // Elemen Total
     const totalBelanjaUI = document.getElementById('total-belanja');
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Pilihan Metode Bayar (untuk cek biaya COD)
     const metodeBayarRadios = document.querySelectorAll('input[name="metode_bayar"]');
-    const detailBayarElements = document.querySelectorAll('.detail-bayar'); // Seleksi semua div detail-bayar
+    const detailBayarElements = document.querySelectorAll('.detail-bayar');
 
     // Nomor WhatsApp Tujuan (Ganti 0 di depan dengan 62)
     const WHATSAPP_NUMBER = '6285692128064';
@@ -34,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const tombol = event.target;
         const idProduk = tombol.dataset.id;
         const namaProduk = tombol.dataset.nama;
-        // Pastikan harga diparse sebagai integer
         const hargaProduk = parseInt(tombol.dataset.harga); 
 
         // Cek apakah produk sudah ada di keranjang
@@ -65,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             tombolBayar.disabled = true;
             peringatanKeranjang.style.display = 'block';
         } else {
-            // FIX KOREKSI: Peringatan yang benar
+            // *** KOREKSI DI SINI: Variabel peringatanKeranjang yang benar digunakan
             tombolBayar.disabled = false;
             peringatanKeranjang.style.display = 'none'; 
 
@@ -83,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 daftarKeranjangUI.appendChild(li);
             });
 
-            // Re-attach event listener untuk elemen yang baru dibuat
+            // Re-attach event listener untuk elemen yang baru dibuat (kuantitas dan hapus)
             document.querySelectorAll('.hapus-btn').forEach(btn => {
                 btn.addEventListener('click', hapusItemDariKeranjang);
             });
@@ -120,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Fungsi untuk menghitung dan memperbarui total harga
+     * Fungsi untuk menghitung dan memperbarui total harga dan tampilan detail bayar
      */
     function updateTotalHarga() {
         const subtotal = keranjang.reduce((total, item) => total + (item.harga * item.kuantitas), 0);
@@ -128,12 +127,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const metodeBayarTerpilih = document.querySelector('input[name="metode_bayar"]:checked');
         let biayaTambahan = 0;
         
-        // Menampilkan/menyembunyikan detail pembayaran
+        // Sembunyikan semua detail bayar
         detailBayarElements.forEach(el => el.style.display = 'none');
         
         if (metodeBayarTerpilih) {
-             // Tampilkan detail bayar yang sesuai
-            document.querySelector(`.${metodeBayarTerpilih.value}-detail`).style.display = 'block';
+            // Tampilkan detail bayar yang sesuai (misalnya: cod-detail)
+            const detailElement = document.querySelector(`.${metodeBayarTerpilih.value}-detail`);
+            if (detailElement) {
+                detailElement.style.display = 'block';
+            }
 
             if (metodeBayarTerpilih.value === 'cod') {
                 biayaTambahan = BIAYA_COD;
@@ -153,15 +155,19 @@ document.addEventListener('DOMContentLoaded', () => {
      * Fungsi untuk mengirim data form ke WhatsApp
      */
     function kirimKeWhatsApp(event) {
-        event.preventDefault(); // Mencegah form submit default
+        event.preventDefault(); 
 
-        // Validasi Cepat: Pastikan keranjang tidak kosong (walaupun tombol sudah disabled)
+        // Validasi: Pastikan keranjang tidak kosong dan field form terisi
         if (keranjang.length === 0) {
             alert("Keranjang masih kosong. Silakan tambahkan produk.");
             return;
         }
+        if (!formCheckout.checkValidity()) {
+             alert("Mohon lengkapi semua data pengiriman (Nama, Alamat, Telepon).");
+             return;
+        }
 
-        // Ambil semua data dari form (validasi 'required' sudah di handle oleh browser)
+        // Ambil semua data dari form
         const nama = document.getElementById('nama').value;
         const alamat = document.getElementById('alamat').value;
         const telepon = document.getElementById('telepon').value;
@@ -179,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pesan += `*--- DETAIL PESANAN ---*\n`;
         
         keranjang.forEach(item => {
-            // Menggunakan toLocaleString untuk format harga yang benar di pesan WA
             pesan += `• ${item.nama} (x${item.kuantitas}) - Rp ${(item.harga * item.kuantitas).toLocaleString('id-ID')}\n`;
         });
 
@@ -220,8 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         radio.addEventListener('change', updateTotalHarga);
     });
 
-    // 4. Render keranjang saat pertama kali load (untuk menampilkan pesan "kosong")
-    // Panggil sekali agar semua state UI awal terpasang
-    updateTotalHarga(); // Panggil ini untuk menyembunyikan detail bayar awal
+    // Panggil sekali saat load
+    updateTotalHarga(); 
     renderKeranjang(); 
 });
