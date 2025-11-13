@@ -5,6 +5,7 @@
     --text-color: #333;
     --light-bg: #f7f7f7;
     --white-bg: #ffffff;
+    --error-color: #D32F2F; /* Merah untuk peringatan/hapus */
 }
 
 * {
@@ -182,13 +183,57 @@ button:hover {
     margin-bottom: 20px;
 }
 
+/* ================================================= */
+/* === STYLING BARU UNTUK ITEM KERANJANG AKTIF === */
+/* ================================================= */
 #daftar-keranjang li {
-    padding: 8px 0;
+    padding: 10px 0;
     border-bottom: 1px dotted #ccc;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap; /* Pastikan responsif pada layar kecil */
 }
+
+#daftar-keranjang li span {
+    /* Bagian nama produk */
+    flex-grow: 1; 
+    margin-right: 15px;
+}
+
+.kontrol-item {
+    /* Kontainer untuk input kuantitas dan tombol hapus */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.qty-input {
+    /* Input kuantitas */
+    width: 50px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.hapus-btn {
+    /* Tombol Hapus/Remove */
+    background-color: var(--error-color);
+    color: white;
+    padding: 5px 8px;
+    font-size: 0.8em;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.hapus-btn:hover {
+    background-color: #a02020;
+}
+/* ================================================= */
+/* ================================================= */
+
 
 .keranjang-total, .grand-total {
     margin: 10px 0;
@@ -236,7 +281,7 @@ button:hover {
     resize: vertical;
 }
 
-/* Payment Options */
+/* Payment & Packaging Options */
 .pilihan-pembayaran {
     margin-bottom: 15px;
     padding: 10px;
@@ -267,7 +312,7 @@ button:hover {
 }
 
 .peringatan {
-    color: #D32F2F; /* Merah */
+    color: var(--error-color); /* Merah */
     background-color: #FFEBEE;
     padding: 10px;
     border-radius: 5px;
@@ -277,7 +322,7 @@ button:hover {
 }
 
 .remove-item {
-    background-color: #D32F2F;
+    background-color: var(--error-color);
     padding: 3px 8px;
     font-size: 0.8em;
     margin-left: 10px;
@@ -303,8 +348,6 @@ footer p {
     max-width: 500px; 
     /* Menengahkan blok daftar (ol) di dalam container */
     margin: 0 auto;
-    /* Menengahkan teks di dalam list item */
-    text-align: center;
     /* Memberi padding horizontal agar tidak terlalu mepet */
     padding-left: 20px;
     padding-right: 20px;
